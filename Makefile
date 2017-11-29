@@ -22,7 +22,7 @@ ifeq ($(CROSSCOMPILE),)
     DEFAULT_TARGETS = priv
     endif
 endif
-DEFAULT_TARGETS ?= priv/libsniff.so
+DEFAULT_TARGETS ?= priv priv/libsniff.so
 
 # Look for the EI library and header files
 # For crosscompiled builds, ERL_EI_INCLUDE_DIR and ERL_EI_LIBDIR must be
@@ -40,35 +40,26 @@ endif
 ERL_CFLAGS ?= -I$(ERL_EI_INCLUDE_DIR)
 ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR) -lei
 
-include env.tmp
-CFLAGS ?= -fPIC -std=c99 -D_GNU_SOURCE -pedantic-errors -Wall -Wextra -I$(ERTS_HOME)/include
-LDFLAGS ?= -shared -dynamiclib -undefined,dynamic_lookup
-CC = $(CROSSCOMPILE)-gcc
-UNAME := $(shell uname)
-SRCDIR   = src
-OBJDIR   = obj
-PRVDIR	 = priv
+LDFLAGS += -shared -dynamiclib -undefined,dynamic_lookup
+CFLAGS += -fpic
+CC ?= $(CROSSCOMPILE)-gcc
 
-SOURCES = $(SRCDIR)/sniff_posix.c $(SRCDIR)/sniff.c
-
-OBJECTS := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+SRC=src/sniff_posix.c src/sniff.c 
+OBJ=$(SRC:.c=.o)
 
 .PHONY: all clean
 
 all: $(DEFAULT_TARGETS)
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	mkdir -p $(OBJDIR)
-	@echo CFLAGS=$(CFLAGS)
-	@echo ERL_CC=$(ERL_CFLAGS)
-	@echo CC=$(CC) 
+%.o: %.c
 	$(CC) -c $(ERL_CFLAGS) $(CFLAGS) -o $@ $<
 
-priv/libsniff.so: $(OBJECTS)
-	mkdir -p $(PRVDIR)
+priv:
+	mkdir -p priv
+
+priv/libsniff.so: $(OBJ)
 	$(CC) $^ $(ERL_LDFLAGS) $(LDFLAGS) -o $@
 
 clean:
-	rm -f obj/*
-	rm -f priv/*
+	rm -f src/*.o libsniff.so
 
