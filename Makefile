@@ -45,21 +45,26 @@ CFLAGS += -fpic
 CC ?= $(CROSSCOMPILE)-gcc
 
 SRC=src/sniff_posix.c src/sniff.c 
-OBJ=$(SRC:.c=.o)
+OBJ=$(patsubst src/%, obj/%, $(SRC:.c=.o))
 
-.PHONY: all clean
+.PHONY: all clean priv
 
 all: $(DEFAULT_TARGETS)
 
-%.o: %.c
+obj/%.o: src/%.c
 	$(CC) -c $(ERL_CFLAGS) $(CFLAGS) -o $@ $<
 
 priv:
 	mkdir -p priv
+	mkdir -p obj
+
+print:
+	@echo "OBJ=$(OBJ)"
 
 priv/libsniff.so: $(OBJ)
 	$(CC) $^ $(ERL_LDFLAGS) $(LDFLAGS) -o $@
 
 clean:
-	rm -f src/*.o libsniff.so
+	rm -f priv/libsniff.so
+	rm -rf obj
 

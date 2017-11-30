@@ -3,6 +3,7 @@
 /deps
 /doc
 /obj
+/priv
 /src/*.o
 *.dump
 *.ez
