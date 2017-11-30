@@ -4,7 +4,7 @@ defmodule Sniff do
   @on_load :init
 
   def init() do
-    nif = :code.priv_dir(:sniff) ++ '/sniff'
+    nif = :code.priv_dir(:sniff) ++ '/libsniff'
     :erlang.load_nif(nif, 0)
   end
 
