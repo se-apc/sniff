@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Compile.Nif do
     generate_env()
     case :os.type() do
       {:unix, :darwin} -> 0 = Mix.Shell.IO.cmd("make -f make.darwin")
-      {:unix, :linux} -> 0 = Mix.Shell.IO.cmd("make -f make.linux")
+      {:unix, :linux} -> 0 = Mix.Shell.IO.cmd("make -f Makefile")
       {:win32, :nt} -> 0 = Mix.Shell.IO.cmd("nmake /f make.winnt")
     end
     :ok
@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Compile.Nif do
     generate_env()
     case :os.type() do
       {:unix, :darwin} -> 0 = Mix.Shell.IO.cmd("make -f make.darwin clean")
-      {:unix, :linux} -> 0 = Mix.Shell.IO.cmd("make -f make.linux clean")
+      {:unix, :linux} -> 0 = Mix.Shell.IO.cmd("make -f Makefile clean")
       {:win32, :nt} -> 0 = Mix.Shell.IO.cmd("nmake /f make.winnt clean")
     end
     :ok
@@ -41,7 +41,7 @@ defmodule Sniff.Mixfile do
     [app: :sniff,
      version: "0.1.4",
      elixir: "~> 1.3",
-     compilers: [:nif | Mix.compilers],
+     compilers: [:elixir_make] ++ Mix.compilers(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
@@ -56,6 +56,7 @@ defmodule Sniff.Mixfile do
 
   defp deps do
     [
+      {:elixir_make, "~> 0.4", runtime: false},
       {:ex_doc, "~> 0.12", only: :dev},
     ]
   end
