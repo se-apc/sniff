@@ -14,6 +14,7 @@
 void serial_open(BAUD_RESOURCE *res, int speed) {
   res->error = NULL;
   struct termios fdt;
+  char errstring[256];
   memset(&fdt, 0, sizeof(fdt));
   res->fd = -1;
   int count = snprintf(res->path, MAXPATH + 1, "/dev/%s", res->device);
@@ -119,10 +120,16 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
   fdt.c_cc[VTIME] = 0;
   fdt.c_cc[VMIN] = 0;
 
+  errno = 0;
   if (tcsetattr(res->fd, TCSANOW, &fdt) < 0) {
-    res->error = "tcsetattr failed";
+    snprintf(errstring, 256, "tcsetattr failed: %s/(%d)", strerror(errno), errno);
+    res->error = errstring;
     return;
   }
+
+  // clear the buffer prior to any future read
+  tcflush(res->fd, TCIOFLUSH);
+  //tcsetattr(fd, TCSAFLUSH, &options);
 }
 
 void serial_available(BAUD_RESOURCE *res) {
