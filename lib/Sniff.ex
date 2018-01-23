@@ -16,6 +16,10 @@ defmodule Sniff do
     "NIF library not loaded"
   end
 
+  def readchar(_nid) do
+    "NIF library not loaded"
+  end
+
   def write(_nid, _data) do
     "NIF library not loaded"
   end

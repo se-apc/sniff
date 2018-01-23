@@ -117,6 +117,25 @@ void serial_read(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size) {
   res->count = count;
 }
 
+void serial_read_char(BAUD_RESOURCE *res, unsigned char *buffer) {
+  res->error = NULL;
+  DWORD count = 0;
+
+  if (res->count > 0) {
+    if (!ReadFile(res->handle, buffer, 1, &count, NULL)) {
+      res->error = "ReadFile failed";
+      return;
+    }
+
+    if (1 != count) {
+      res->error = "ReadFile mismatch";
+      return;
+    }
+  }
+
+  res->count = count;
+}
+
 void serial_write(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size) {
   res->error = NULL;
   DWORD count = 0;

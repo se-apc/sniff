@@ -159,6 +159,32 @@ void serial_read(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size) {
   res->count = count;
 }
 
+void serial_read_char(BAUD_RESOURCE *res, unsigned char *buffer) {
+  char errorstr[256];
+  res->error = NULL;
+  int count = 0;
+  
+  if (res->count > 0)
+  {
+    count = read(res->fd, buffer, 1);
+
+    errno = 0;
+    if (count < 0) {
+      snprintf(errorstr, 256, "readchar failed: %s/(%d)", strerror(errno), errno);
+      res->error = errorstr;
+      return;
+    }
+    else if (1 != count) {
+        snprintf(errorstr, 256, "readchar mismatch: 1->%d", count);
+        res->error = errorstr;
+        return;
+    }
+  }
+
+  //update with how many chars actually read
+  res->count = count;
+}
+
 void serial_write(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size) {
   res->error = NULL;
   int count = write(res->fd, buffer, size);

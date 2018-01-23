@@ -157,6 +157,49 @@ static ERL_NIF_TERM nif_read(ErlNifEnv *env, int argc,
   return enif_make_tuple2(env, atom_ok, enif_make_binary(env, &bin));
 }
 
+static ERL_NIF_TERM nif_read_char(ErlNifEnv *env, int argc,
+                             const ERL_NIF_TERM argv[]) {
+  if (argc != 1) {
+    return enif_make_tuple2(
+        env, atom_er,
+        enif_make_string(env, "Invalid argument count", ERL_NIF_LATIN1));
+  }
+  BAUD_RESOURCE *res = NULL;
+  if (!enif_get_resource(env, argv[0], RES_TYPE, (void **)&res)) {
+    return enif_make_tuple2(
+        env, atom_er,
+        enif_make_string(env, "Argument 0 is not a resource", ERL_NIF_LATIN1));
+  }
+  serial_available(res);
+  if (res->error != NULL) {
+    return enif_make_tuple2(env, atom_er,
+                            enif_make_string(env, res->error, ERL_NIF_LATIN1));
+  }
+  if (res->count < 0)
+    return enif_make_tuple2(env, atom_er, enif_make_int(env, res->count));
+  ErlNifBinary bin;
+  if (res->count > 0) {
+    // Allocate memory for single char
+    if (!enif_alloc_binary(1, &bin)) {
+      enif_release_binary(&bin);
+      return enif_raise_exception(
+          env, enif_make_string(env, "enif_alloc_binary 1 failed", ERL_NIF_LATIN1));
+    }
+  } else {
+    if (!enif_alloc_binary(res->count, &bin)) {
+      enif_release_binary(&bin);
+      return enif_raise_exception(
+          env, enif_make_string(env, "enif_alloc_binary failed", ERL_NIF_LATIN1));
+    }
+  }
+  serial_read_char(res, bin.data);
+  if (res->error != NULL) {
+    return enif_make_tuple2(env, atom_er,
+                            enif_make_string(env, res->error, ERL_NIF_LATIN1));
+  }
+  return enif_make_tuple2(env, atom_ok, enif_make_binary(env, &bin));
+}
+
 static ERL_NIF_TERM nif_write(ErlNifEnv *env, int argc,
                               const ERL_NIF_TERM argv[]) {
   if (argc != 2) {
@@ -207,6 +250,7 @@ static ERL_NIF_TERM nif_close(ErlNifEnv *env, int argc,
 
 static ErlNifFunc nif_funcs[] = {{"open", 3, nif_open, 0},
                                  {"read", 1, nif_read, 0},
+                                 {"readchar", 1, nif_read_char, 0},
                                  {"write", 2, nif_write, 0},
                                  {"close", 1, nif_close, 0}};
 
