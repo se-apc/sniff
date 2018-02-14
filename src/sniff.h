@@ -33,6 +33,7 @@ void serial_open(BAUD_RESOURCE *res, int speed);
 void serial_close(BAUD_RESOURCE *res);
 void serial_release(BAUD_RESOURCE *res);
 void serial_available(BAUD_RESOURCE *res);
+void serial_in_flush(BAUD_RESOURCE *res);
 void serial_read(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size);
 void serial_read_char(BAUD_RESOURCE *res, unsigned char *buffer);
 void serial_write(BAUD_RESOURCE *res, unsigned char *buffer, COUNT size);

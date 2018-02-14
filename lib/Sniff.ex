@@ -12,6 +12,10 @@ defmodule Sniff do
     "NIF library not loaded"
   end
 
+  def inflush(_nid) do
+    "NIF library not loaded"
+  end
+
   def read(_nid) do
     "NIF library not loaded"
   end

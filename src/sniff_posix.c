@@ -132,6 +132,15 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
   //tcsetattr(fd, TCSAFLUSH, &options);
 }
 
+void serial_in_flush(BAUD_RESOURCE *res) {
+  res->error = NULL;
+  // clear the serial buffer 
+  if (tcflush(res->fd, TCIFLUSH) < 0) {
+    res->error = "tcflush failed";
+    return;
+  }
+}
+
 void serial_available(BAUD_RESOURCE *res) {
   res->error = NULL;
   size_t count = 0;

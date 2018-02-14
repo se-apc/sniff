@@ -88,6 +88,15 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
   }
 }
 
+void serial_in_flush(BAUD_RESOURCE *res) {
+  res->error = NULL;
+  // clear the serial buffer 
+  if (!PurgeComm(res->handle, PURGE_RXCLEAR)) {
+    res->error = "tcflush failed";
+    return;
+  }
+}
+
 void serial_available(BAUD_RESOURCE *res) {
   res->error = NULL;
   COMSTAT baudStat;

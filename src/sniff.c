@@ -123,6 +123,27 @@ static ERL_NIF_TERM nif_open(ErlNifEnv *env, int argc,
   return enif_make_tuple2(env, atom_ok, resterm);
 }
 
+static ERL_NIF_TERM nif_in_flush(ErlNifEnv *env, int argc,
+                              const ERL_NIF_TERM argv[]) {
+  if (argc != 1) {
+    return enif_make_tuple2(
+        env, atom_er,
+        enif_make_string(env, "Invalid argument count", ERL_NIF_LATIN1));
+  }
+  BAUD_RESOURCE *res = NULL;
+  if (!enif_get_resource(env, argv[0], RES_TYPE, (void **)&res)) {
+    return enif_make_tuple2(
+        env, atom_er,
+        enif_make_string(env, "Argument 0 is not a resource", ERL_NIF_LATIN1));
+  }
+  serial_in_flush(res);
+  if (res->error != NULL) {
+    return enif_make_tuple2(env, atom_er,
+                            enif_make_string(env, res->error, ERL_NIF_LATIN1));
+  }
+  return atom_ok;
+}
+
 static ERL_NIF_TERM nif_read(ErlNifEnv *env, int argc,
                              const ERL_NIF_TERM argv[]) {
   if (argc != 1) {
@@ -249,6 +270,7 @@ static ERL_NIF_TERM nif_close(ErlNifEnv *env, int argc,
 }
 
 static ErlNifFunc nif_funcs[] = {{"open", 3, nif_open, 0},
+                                 {"inflush", 1, nif_in_flush, 0},
                                  {"read", 1, nif_read, 0},
                                  {"readchar", 1, nif_read_char, 0},
                                  {"write", 2, nif_write, 0},
