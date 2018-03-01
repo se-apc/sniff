@@ -58,6 +58,16 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
   if (strcmp(res->config, "8N1") == 0) {
     dcb.ByteSize = 8;
     dcb.Parity = NOPARITY;
+  } else if (strcmp(res->config, "8N2") == 0) {
+    dcb.ByteSize = 8;
+    dcb.Parity = NOPARITY;
+    dcb.StopBits = TWOSTOPBITS;
+  } if (strcmp(res->config, "8E1") == 0) {
+    dcb.ByteSize = 8;
+    dcb.Parity = EVENPARITY;
+  } if (strcmp(res->config, "8O1") == 0) {
+    dcb.ByteSize = 8;
+    dcb.Parity = ODDPARITY;
   } else if (strcmp(res->config, "7E1") == 0) {
     dcb.ByteSize = 7;
     dcb.Parity = EVENPARITY;
