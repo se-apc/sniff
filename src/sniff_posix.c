@@ -79,6 +79,12 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
     fdt.c_cflag &= ~CSTOPB;
     fdt.c_cflag &= ~CSIZE;
     fdt.c_cflag |= CS8;
+  } else if (strcmp(res->config, "8N2") == 0) {
+    fdt.c_cflag |= CS8;
+    fdt.c_cflag &= ~PARENB;
+    fdt.c_cflag |= CSTOPB;
+    fdt.c_cflag &= ~CSIZE;
+    fdt.c_cflag |= CS8;
   } else if (strcmp(res->config, "8E1") == 0) {
     fdt.c_cflag |= CS8;
     fdt.c_cflag |= PARENB;
