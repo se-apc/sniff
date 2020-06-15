@@ -11,6 +11,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+
 void serial_open(BAUD_RESOURCE *res, int speed) {
   res->error = NULL;
   struct termios fdt;
@@ -87,6 +88,22 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
     fdt.c_cflag &= ~CSIZE;
     fdt.c_cflag |= CS8;
     fdt.c_iflag &= ~INPCK;
+  } else if (strcmp(res->config, "8E2") == 0) {
+    fdt.c_cflag |= CS8;
+    fdt.c_cflag |= PARENB;
+    fdt.c_cflag &= ~PARODD;
+    fdt.c_cflag |= CSTOPB;
+    fdt.c_cflag &= ~CSIZE;
+    fdt.c_cflag |= CS8;
+    fdt.c_iflag |= INPCK;
+  } else if (strcmp(res->config, "8O2") == 0) {
+    fdt.c_cflag |= CS8;
+    fdt.c_cflag |= PARENB;
+    fdt.c_cflag |= PARODD;
+    fdt.c_cflag |= CSTOPB;
+    fdt.c_cflag &= ~CSIZE;
+    fdt.c_cflag |= CS8;
+    fdt.c_iflag |= INPCK;
   } else if (strcmp(res->config, "8E1") == 0) {
     fdt.c_cflag |= CS8;
     fdt.c_cflag |= PARENB;
@@ -142,7 +159,7 @@ void serial_open(BAUD_RESOURCE *res, int speed) {
 
 void serial_in_flush(BAUD_RESOURCE *res) {
   res->error = NULL;
-  // clear the serial buffer 
+  // clear the serial buffer
   if (tcflush(res->fd, TCIFLUSH) < 0) {
     res->error = "tcflush failed";
     return;

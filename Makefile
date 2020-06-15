@@ -44,7 +44,7 @@ LDFLAGS += -shared -dynamiclib -undefined,dynamic_lookup
 CFLAGS += -fpic
 CC ?= $(CROSSCOMPILE)-gcc
 
-SRC=src/sniff_posix.c src/sniff.c 
+SRC=src/sniff_posix.c src/sniff.c
 OBJ=$(patsubst src/%, obj/%, $(SRC:.c=.o))
 
 .PHONY: all clean priv
