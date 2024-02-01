@@ -172,6 +172,7 @@ static ERL_NIF_TERM nif_read(ErlNifEnv *env, int argc,
   }
   serial_read(res, bin.data, (COUNT)bin.size);
   if (res->error != NULL) {
+    enif_release_binary(&bin);
     return enif_make_tuple2(env, atom_er,
                             enif_make_string(env, res->error, ERL_NIF_LATIN1));
   }
@@ -215,6 +216,7 @@ static ERL_NIF_TERM nif_read_char(ErlNifEnv *env, int argc,
   }
   serial_read_char(res, bin.data);
   if (res->error != NULL) {
+    enif_release_binary(&bin);
     return enif_make_tuple2(env, atom_er,
                             enif_make_string(env, res->error, ERL_NIF_LATIN1));
   }
