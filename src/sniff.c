@@ -18,7 +18,7 @@ void release_resource(ErlNifEnv *env, void *obj) {
 
 static int open_resource(ErlNifEnv *env) {
   RES_TYPE = enif_open_resource_type(
-      env, "Elixir.Sniff", "Elixir.Sniff", release_resource,
+      env, NULL, "Elixir.Sniff", release_resource,
       ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER, NULL);
 
   if (RES_TYPE == NULL)
